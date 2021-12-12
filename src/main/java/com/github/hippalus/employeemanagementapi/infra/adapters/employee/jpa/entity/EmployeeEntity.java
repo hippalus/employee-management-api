@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ import org.hibernate.Hibernate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "employee")
+@Table(name = "employee", uniqueConstraints = {@UniqueConstraint(name = "employee_unique_email_idx", columnNames = {"email"})})
 public class EmployeeEntity extends AbstractAuditingEntity {
 
   @Column(nullable = false)

@@ -1,8 +1,9 @@
 package com.github.hippalus.employeemanagementapi.infra.common.rest;
 
+import com.github.hippalus.employeemanagementapi.domain.common.usecase.ObservableUseCasePublisher;
 import java.util.List;
 
-public class BaseController {
+public class BaseController extends ObservableUseCasePublisher {
 
   public <T> Response<DataResponse<T>> respond(List<T> items) {
     return ResponseBuilder.build(items);

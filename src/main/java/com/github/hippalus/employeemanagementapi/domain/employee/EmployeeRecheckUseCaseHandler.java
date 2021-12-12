@@ -4,36 +4,37 @@ import com.github.hippalus.employeemanagementapi.domain.common.usecase.Observabl
 import com.github.hippalus.employeemanagementapi.domain.common.usecase.UseCaseHandler;
 import com.github.hippalus.employeemanagementapi.domain.employee.event.EmployeeEventType;
 import com.github.hippalus.employeemanagementapi.domain.employee.model.Employee;
+import com.github.hippalus.employeemanagementapi.domain.employee.model.EmployeeState;
 import com.github.hippalus.employeemanagementapi.domain.employee.port.EmployeePort;
-import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeApprove;
+import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeRecheck;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class EmployeeApproveUseCaseHandler extends ObservableUseCasePublisher implements
-    UseCaseHandler<Employee, EmployeeApprove> {
+public class EmployeeRecheckUseCaseHandler extends ObservableUseCasePublisher implements
+    UseCaseHandler<Employee, EmployeeRecheck> {
 
   private final EmployeePort employeePort;
   private final EmployeeStateService employeeStateService;
 
-  public EmployeeApproveUseCaseHandler(EmployeePort employeePort,
+  public EmployeeRecheckUseCaseHandler(EmployeePort employeePort,
       EmployeeStateService employeeStateService) {
     this.employeePort = employeePort;
     this.employeeStateService = employeeStateService;
-    register(EmployeeApprove.class, this);
+    register(EmployeeRecheck.class, this);
   }
 
   @Override
-  @Transactional
-  public Employee handle(EmployeeApprove useCase) {
+  public Employee handle(EmployeeRecheck useCase) {
     final Long employeeId = useCase.getEmployeeId();
-    final var state = employeePort.getState(employeeId);
-    final var stateMachine = employeeStateService.getStateMachine(useCase.getEmployeeIdStr(), state);
-    final var msg = MessageBuilder.withPayload(EmployeeEventType.APPROVED)
+    EmployeeState lastState = employeePort.getState(employeeId);
+    final var stateMachine = employeeStateService.getStateMachine(useCase.getEmployeeIdStr(), lastState);
+    final var msg = MessageBuilder.withPayload(EmployeeEventType.RECHECK)
         .setHeader("employee_id", employeeId)
         .build();
     stateMachine.sendEvent(msg);
     return employeePort.retrieve(employeeId);
   }
+
+
 }

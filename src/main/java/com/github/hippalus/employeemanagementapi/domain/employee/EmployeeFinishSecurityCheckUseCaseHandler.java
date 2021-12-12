@@ -1,20 +1,27 @@
 package com.github.hippalus.employeemanagementapi.domain.employee;
 
+import com.github.hippalus.employeemanagementapi.domain.common.usecase.ObservableUseCasePublisher;
 import com.github.hippalus.employeemanagementapi.domain.common.usecase.UseCaseHandler;
 import com.github.hippalus.employeemanagementapi.domain.employee.event.EmployeeEventType;
 import com.github.hippalus.employeemanagementapi.domain.employee.model.Employee;
 import com.github.hippalus.employeemanagementapi.domain.employee.port.EmployeePort;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeFinishSecurityCheck;
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class EmployeeFinishSecurityCheckUseCaseHandler implements UseCaseHandler<Employee, EmployeeFinishSecurityCheck> {
+public class EmployeeFinishSecurityCheckUseCaseHandler extends ObservableUseCasePublisher implements
+    UseCaseHandler<Employee, EmployeeFinishSecurityCheck> {
 
   private final EmployeePort employeePort;
   private final EmployeeStateService employeeStateService;
+
+  public EmployeeFinishSecurityCheckUseCaseHandler(EmployeePort employeePort,
+      EmployeeStateService employeeStateService) {
+    this.employeePort = employeePort;
+    this.employeeStateService = employeeStateService;
+    register(EmployeeFinishSecurityCheck.class, this);
+  }
 
   @Override
   public Employee handle(EmployeeFinishSecurityCheck useCase) {

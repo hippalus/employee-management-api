@@ -33,13 +33,6 @@ public class StateMachineConfiguration extends EnumStateMachineConfigurerAdapter
   public void configure(StateMachineStateConfigurer<EmployeeState, EmployeeEventType> states) {
     states.withStates()
         .initial(EmployeeState.ADDED)
-        /* .stateEntry(EmployeeState.ADDED, context -> {
-
-           Long employeeId = (Long) context.getExtendedState().getVariables().getOrDefault("employee_id", -1L);
-
-           log.info("Employee with id: " + employeeId + " is included to the platform with the ADDED state");
-         })
- */
         .state(EmployeeState.IN_CHECK)
         .state(EmployeeState.APPROVED)
         .end(EmployeeState.ACTIVE);
@@ -55,6 +48,9 @@ public class StateMachineConfiguration extends EnumStateMachineConfigurerAdapter
         .and()
         .withExternal()
         .source(EmployeeState.IN_CHECK).target(EmployeeState.APPROVED).event(EmployeeEventType.APPROVED)
+        .and()
+        .withExternal()
+        .source(EmployeeState.APPROVED).target(EmployeeState.IN_CHECK).event(EmployeeEventType.RECHECK)
         .and()
         .withExternal()
         .source(EmployeeState.APPROVED).target(EmployeeState.ACTIVE).event(EmployeeEventType.ACTIVATED);

@@ -1,22 +1,29 @@
 package com.github.hippalus.employeemanagementapi.domain.employee;
 
+import com.github.hippalus.employeemanagementapi.domain.common.usecase.ObservableUseCasePublisher;
 import com.github.hippalus.employeemanagementapi.domain.common.usecase.UseCaseHandler;
 import com.github.hippalus.employeemanagementapi.domain.employee.event.EmployeeEventType;
 import com.github.hippalus.employeemanagementapi.domain.employee.model.Employee;
 import com.github.hippalus.employeemanagementapi.domain.employee.model.EmployeeState;
 import com.github.hippalus.employeemanagementapi.domain.employee.port.EmployeePort;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeInCheck;
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
-public class EmployeeInCheckUseCaseHandler implements UseCaseHandler<Employee, EmployeeInCheck> {
+public class EmployeeInCheckUseCaseHandler extends ObservableUseCasePublisher implements
+    UseCaseHandler<Employee, EmployeeInCheck> {
 
   private final EmployeePort employeePort;
   private final EmployeeStateService employeeStateService;
+
+  public EmployeeInCheckUseCaseHandler(EmployeePort employeePort,
+      EmployeeStateService employeeStateService) {
+    this.employeePort = employeePort;
+    this.employeeStateService = employeeStateService;
+    register(EmployeeInCheck.class, this);
+  }
 
   @Override
   @Transactional

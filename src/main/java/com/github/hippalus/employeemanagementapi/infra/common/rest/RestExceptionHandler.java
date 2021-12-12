@@ -4,11 +4,15 @@ import com.github.hippalus.employeemanagementapi.domain.common.exception.DataNot
 import com.github.hippalus.employeemanagementapi.domain.common.exception.EmployeeApiBusinessException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.validation.BindException;
@@ -28,6 +32,9 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 public class RestExceptionHandler extends BaseController {
 
   private final MessageSource messageSource;
+
+  private static final Map<String, String> CONSTRAINS_I18N_MAP = Map.of("employee_unique_email_idx",
+      "employee.email.already.exist");
 
 
   @ExceptionHandler(Exception.class)
@@ -80,6 +87,27 @@ public class RestExceptionHandler extends BaseController {
     log.debug("Method argument not valid. Message: $methodArgumentNotValidException.message", methodArgumentNotValidException);
     return createFieldErrorResponse(methodArgumentNotValidException.getBindingResult(), locale);
   }
+
+  @ResponseStatus(value = HttpStatus.CONFLICT)
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public Response<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception, Locale locale) {
+    log.debug("Method argument not valid. Message: $dataIntegrityViolationException.message", exception);
+    Optional<String> message = Optional.empty();
+    if (exception.getRootCause() != null) {
+      message = Optional.ofNullable(exception.getRootCause().getMessage());
+    }
+    return message.map(String::toLowerCase).map(lowerCaseMsg -> getErrorResponseFromExMessage(locale, lowerCaseMsg)).orElse(null);
+  }
+
+  private Response<ErrorResponse> getErrorResponseFromExMessage(Locale locale, String lowerCaseMsg) {
+    for (Entry<String, String> e : CONSTRAINS_I18N_MAP.entrySet()) {
+      if (lowerCaseMsg.contains(e.getKey())) {
+        return createErrorResponseFromMessageSource(e.getValue(), locale);
+      }
+    }
+    return createErrorResponseFromMessageSource("", locale);
+  }
+
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)

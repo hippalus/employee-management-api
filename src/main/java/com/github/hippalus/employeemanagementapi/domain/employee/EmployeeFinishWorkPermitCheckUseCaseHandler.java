@@ -1,20 +1,27 @@
 package com.github.hippalus.employeemanagementapi.domain.employee;
 
+import com.github.hippalus.employeemanagementapi.domain.common.usecase.ObservableUseCasePublisher;
 import com.github.hippalus.employeemanagementapi.domain.common.usecase.UseCaseHandler;
 import com.github.hippalus.employeemanagementapi.domain.employee.event.EmployeeEventType;
 import com.github.hippalus.employeemanagementapi.domain.employee.model.Employee;
 import com.github.hippalus.employeemanagementapi.domain.employee.port.EmployeePort;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeFinishWorkPermitCheck;
-import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class EmployeeFinishWorkPermitCheckUseCaseHandler implements UseCaseHandler<Employee, EmployeeFinishWorkPermitCheck> {
+public class EmployeeFinishWorkPermitCheckUseCaseHandler extends ObservableUseCasePublisher implements
+    UseCaseHandler<Employee, EmployeeFinishWorkPermitCheck> {
 
   private final EmployeePort employeePort;
   private final EmployeeStateService employeeStateService;
+
+  public EmployeeFinishWorkPermitCheckUseCaseHandler(EmployeePort employeePort,
+      EmployeeStateService employeeStateService) {
+    this.employeePort = employeePort;
+    this.employeeStateService = employeeStateService;
+    register(EmployeeFinishWorkPermitCheck.class, this);
+  }
 
   @Override
   public Employee handle(EmployeeFinishWorkPermitCheck useCase) {

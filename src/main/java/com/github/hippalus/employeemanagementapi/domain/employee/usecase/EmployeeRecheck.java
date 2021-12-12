@@ -4,7 +4,7 @@ import com.github.hippalus.employeemanagementapi.domain.common.model.UseCase;
 import lombok.Value;
 
 @Value(staticConstructor = "valueOf")
-public class EmployeeApprove implements UseCase {
+public class EmployeeRecheck implements UseCase {
 
   Long employeeId;
 
@@ -12,3 +12,4 @@ public class EmployeeApprove implements UseCase {
     return employeeId.toString();
   }
 }
+

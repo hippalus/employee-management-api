@@ -35,6 +35,7 @@ public class EmployeeResponse {
         .updatedAt(employee.getUpdatedAt())
         .age(employee.getAge())
         .phoneNumber(employee.getPhoneNumber())
+        .email(employee.getEmail())
         .firstName(employee.getFirstName())
         .lastName(employee.getLastName())
         .build();
