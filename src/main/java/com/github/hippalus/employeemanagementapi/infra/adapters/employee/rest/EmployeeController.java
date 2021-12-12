@@ -5,6 +5,8 @@ import com.github.hippalus.employeemanagementapi.domain.employee.model.Employee;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeActivate;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeApprove;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeCreate;
+import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeFinishSecurityCheck;
+import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeFinishWorkPermitCheck;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeInCheck;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeRetrieve;
 import com.github.hippalus.employeemanagementapi.domain.employee.usecase.EmployeeRetrieveAll;
@@ -31,15 +33,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/employee")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController extends BaseController {
 
   private final UseCaseHandler<Employee, EmployeeCreate> createEmployeeUseCaseHandler;
-  private final UseCaseHandler<Employee, EmployeeRetrieve> employeeEmployeeRetrieveUseCaseHandler;
+  private final UseCaseHandler<Employee, EmployeeRetrieve> employeeRetrieveUseCaseHandler;
   private final UseCaseHandler<Page<Employee>, EmployeeRetrieveAll> employeeRetrieveAllUseCaseHandler;
-  private final UseCaseHandler<Employee, EmployeeActivate> employeeEmployeeActivateUseCaseHandler;
-  private final UseCaseHandler<Employee, EmployeeApprove> employeeEmployeeApproveUseCaseHandler;
-  private final UseCaseHandler<Employee, EmployeeInCheck> employeeEmployeeInCheckUseCaseHandler;
+  private final UseCaseHandler<Employee, EmployeeActivate> employeeActivateUseCaseHandler;
+  private final UseCaseHandler<Employee, EmployeeApprove> employeeApproveUseCaseHandler;
+  private final UseCaseHandler<Employee, EmployeeInCheck> employeeInCheckUseCaseHandler;
+ // private final UseCaseHandler<Employee, EmployeeFinishWorkPermitCheck> employeeFinishWorkPermitCheckUseCaseHandler;
+ // private final UseCaseHandler<Employee, EmployeeFinishSecurityCheck> employeeFinishSecurityCheckUseCaseHandler;
 
 
   @PostMapping
@@ -51,7 +55,7 @@ public class EmployeeController extends BaseController {
 
   @GetMapping
   public Response<EmployeeResponse> retrieve(@RequestParam("id") Long employeeId) {
-    final Employee employee = employeeEmployeeRetrieveUseCaseHandler.handle(new EmployeeRetrieve(employeeId));
+    final Employee employee = employeeRetrieveUseCaseHandler.handle(new EmployeeRetrieve(employeeId));
     return respond(EmployeeResponse.fromModel(employee));
   }
 
@@ -66,21 +70,33 @@ public class EmployeeController extends BaseController {
 
   @PostMapping("/{id}/command/inCheck")
   public Response<EmployeeResponse> inCheckEmployee(@PathVariable Long id) {
-    final Employee employee = employeeEmployeeInCheckUseCaseHandler.handle(new EmployeeInCheck(id));
+    final Employee employee = employeeInCheckUseCaseHandler.handle(new EmployeeInCheck(id));
     return respond(EmployeeResponse.fromModel(employee));
   }
 
   @PostMapping("/{id}/command/activate")
   public Response<EmployeeResponse> activateEmployee(@PathVariable Long id) {
-    final Employee employee = employeeEmployeeActivateUseCaseHandler.handle(new EmployeeActivate(id));
+    final Employee employee = employeeActivateUseCaseHandler.handle(new EmployeeActivate(id));
     return respond(EmployeeResponse.fromModel(employee));
   }
 
   @PostMapping("/{id}/command/approve")
   public Response<EmployeeResponse> approveEmployee(@PathVariable Long id) {
-    final Employee employee = employeeEmployeeApproveUseCaseHandler.handle(new EmployeeApprove(id));
+    final Employee employee = employeeApproveUseCaseHandler.handle(new EmployeeApprove(id));
     return respond(EmployeeResponse.fromModel(employee));
   }
+
+ /* @PostMapping("/{id}/command/finishSecurityCheck")
+  public Response<EmployeeResponse> finishSecurityCheck(@PathVariable Long id) {
+    final Employee employee = employeeFinishSecurityCheckUseCaseHandler.handle(new EmployeeFinishSecurityCheck(id));
+    return respond(EmployeeResponse.fromModel(employee));
+  }
+
+  @PostMapping("/{id}/command/finishWorkPermitCheck")
+  public Response<EmployeeResponse> finishWorkPermitCheck(@PathVariable Long id) {
+    final Employee employee = employeeFinishWorkPermitCheckUseCaseHandler.handle(new EmployeeFinishWorkPermitCheck(id));
+    return respond(EmployeeResponse.fromModel(employee));
+  }*/
 
 
 }

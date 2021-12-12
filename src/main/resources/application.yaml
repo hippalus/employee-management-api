@@ -39,10 +39,6 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher #  for swagger
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-
 
 server:
   port: 8080

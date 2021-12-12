@@ -1,0 +1,11 @@
+version: '3.2'
+services:
+
+  employee-management-api:
+    image: employee-management-api:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: employee-management-api
+    ports:
+      - "8080:8080"
